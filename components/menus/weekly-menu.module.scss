@@ -1,0 +1,19 @@
+.container {}
+
+.dailyMenus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .dailyMenu {
+    flex: 1 0 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+
+    border: 2px solid black;
+    border-radius: 5px;
+  }
+}
