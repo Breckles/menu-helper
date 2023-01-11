@@ -1,5 +1,14 @@
 import { useState } from 'react';
 
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+
+import DeleteIcon from '@mui/icons-material/Delete';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Button from '@mui/material/Button';
+
 interface IMenuItem {
   id: string;
   item: string;
@@ -41,26 +50,32 @@ const DailyMenu = (props: DailyMenuProps) => {
   };
 
   const inputs = listItems.map((item, i) => (
-    <li key={item.id}>
-      <input
-        type="text"
+    <ListItem key={item.id}>
+      <TextField
+        aria-label="Dish"
+        placeholder="Enter New Dish"
+        variant="standard"
         defaultValue={item.item}
         onChange={valueChangeHandler}
-      />
-      <button
+      ></TextField>
+      <IconButton
         onClick={() => {
           removeItemHandler(i);
         }}
       >
-        X
-      </button>
-    </li>
+        <DeleteIcon />
+      </IconButton>
+    </ListItem>
   ));
 
   return (
     <>
-      <ul>{inputs}</ul>
-      <button onClick={addItemHandler}>Add Item</button>
+      <Box component="form" className="dailyMenuForm">
+        <List>{inputs}</List>
+        <Button variant="contained" type="button" onClick={addItemHandler}>
+          Add Item
+        </Button>
+      </Box>
     </>
   );
 };
