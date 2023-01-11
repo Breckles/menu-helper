@@ -1,3 +1,8 @@
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+
 import DailyMenu from './daily-menu';
 
 import classes from './weekly-menu.module.scss';
@@ -20,18 +25,18 @@ const weekdayLabels = [
 ];
 
 const dailyMenus = weekdayLabels.map((l) => (
-  <li key={l} className={classes.dailyMenu}>
-    <h2>{l}</h2>
+  <ListItem key={l} className={classes.dailyMenu}>
+    <Typography variant="h3">{l}</Typography>
     <DailyMenu items={devItems} />
-  </li>
+  </ListItem>
 ));
 
 const WeeklyMenu = () => {
   return (
-    <div className={classes.container}>
-      <h1>WeeklyMenu component</h1>
-      <ul className={classes.dailyMenus}>{dailyMenus}</ul>
-    </div>
+    <Box className={classes.container}>
+      <Typography variant="h2">WeeklyMenu component</Typography>
+      <List className={classes.dailyMenus}>{dailyMenus}</List>
+    </Box>
   );
 };
 
