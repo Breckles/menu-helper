@@ -1,7 +1,30 @@
 import Head from 'next/head';
 import WeeklyMenu from '../components/menus/weekly-menu';
+import { weeklyMenuSeed } from '../data';
 
 export default function Home() {
+  // const createWeeklyMenuHandler = () => {
+  //   fetch('/api/weekly-menus', {
+  //     method: 'POST',
+  //     body: JSON.stringify(weeklyMenuSeed),
+  //     headers: { 'Content-Type': 'application/json' },
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log(data);
+  //     });
+  // };
+  const createWeeklyMenuHandler = () => {
+    fetch('/api/weekly-menus/63dc38ac21d879a9a78126df', {
+      method: 'PATCH',
+      body: JSON.stringify(weeklyMenuSeed),
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      });
+  };
   return (
     <>
       <Head>
@@ -11,6 +34,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        <button onClick={createWeeklyMenuHandler}>Create weekly menu</button>
         <WeeklyMenu />
       </main>
     </>
