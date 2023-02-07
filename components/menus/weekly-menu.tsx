@@ -4,6 +4,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 
 import DailyMenu from './daily-menu';
+import IWeeklyMenu from '../../models/weekly-menu.model';
 
 import classes from './weekly-menu.module.scss';
 
@@ -24,14 +25,20 @@ const weekdayLabels = [
   'Saturday',
 ];
 
-const dailyMenus = weekdayLabels.map((l) => (
-  <ListItem key={l} className={classes.dailyMenu}>
-    <Typography variant="h3">{l}</Typography>
-    <DailyMenu items={devItems} />
-  </ListItem>
-));
+type WeeklyMenuProps = {
+  weeklyMenu: IWeeklyMenu;
+};
 
-const WeeklyMenu = () => {
+const WeeklyMenu = (props: WeeklyMenuProps) => {
+  const { weeklyMenu } = props;
+
+  const dailyMenus = weeklyMenu.dailyMenus.map((dm, i) => (
+    <ListItem key={dm.weekDay} className={classes.dailyMenu}>
+      <Typography variant="h3">{weekdayLabels[i]}</Typography>
+      <DailyMenu menu={dm} />
+    </ListItem>
+  ));
+
   return (
     <Box className={classes.container}>
       <Typography variant="h2">WeeklyMenu component</Typography>

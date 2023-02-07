@@ -1,28 +1,7 @@
-import { ObjectId, Document } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import db from './db';
 import IWeeklyMenu, { IWeeklyMenuWithId } from '../models/weekly-menu.model';
-import IDailyMenu from '../models/daily-menu.model';
-
-// interface IDocWeeklyMenu extends IWeeklyMenu {
-//   _id: ObjectId;
-//   weekStartDate: string;
-//   dailyMenus: IDailyMenu[];
-//   __v: number;
-// }
-
-// interface IDocWeeklyMenu extends IWeeklyMenu {
-//   _id: ObjectId;
-//   __v: number;
-// }
-
-// const convertDocToIWeeklyMenu = (d: IDocWeeklyMenu) => {
-//   return {
-//     _id: d._id.toString(),
-//     weekStartDate: d.weekStartDate,
-//     dailyMenus: d.dailyMenus,
-//   } as IWeeklyMenu;
-// };
 
 const weeklyMenus = db.collection<IWeeklyMenu>('weekly-menus');
 
@@ -30,13 +9,31 @@ export const getAllWeeklyMenus = async () => {
   try {
     const cursor = await weeklyMenus.find({});
     const allMenuDocs = await cursor.toArray();
-    // const allMenus: IWeeklyMenu[] = allMenuDocs.map((d) =>
-    //   convertDocToIWeeklyMenu(d)
-    // );
     return allMenuDocs;
   } catch (error) {
     throw new Error(`An error occurred fetching all menus: ${error}`);
   }
+};
+
+export const getLatestWeeklyMenu = async () => {
+  const weeklyMenuDoc = await weeklyMenus.findOne(
+    {},
+    {
+      sort: { weekStartDate: -1 },
+    }
+  );
+
+  if (!weeklyMenuDoc) {
+    return null;
+  }
+
+  const weeklyMenu: IWeeklyMenuWithId = {
+    _id: weeklyMenuDoc._id.toString(),
+    weekStartDate: weeklyMenuDoc.weekStartDate,
+    dailyMenus: weeklyMenuDoc.dailyMenus,
+  };
+
+  return weeklyMenu;
 };
 
 export const createWeeklyMenu = async (menu: IWeeklyMenu) => {
@@ -46,7 +43,13 @@ export const createWeeklyMenu = async (menu: IWeeklyMenu) => {
     return null;
   }
 
-  return { ...menu, _id: result.insertedId.toString() } as IWeeklyMenuWithId;
+  const newWeeklyMenu: IWeeklyMenuWithId = {
+    _id: result.insertedId.toString(),
+    weekStartDate: menu.weekStartDate,
+    dailyMenus: menu.dailyMenus,
+  };
+
+  return newWeeklyMenu;
 };
 
 export const getWeeklyMenuById = async (id: string) => {
@@ -58,10 +61,13 @@ export const getWeeklyMenuById = async (id: string) => {
     return null;
   }
 
-  return {
-    ...weeklyMenuDoc,
+  const weeklyMenu: IWeeklyMenuWithId = {
     _id: weeklyMenuDoc._id.toString(),
-  } as IWeeklyMenuWithId;
+    weekStartDate: weeklyMenuDoc.weekStartDate,
+    dailyMenus: weeklyMenuDoc.dailyMenus,
+  };
+
+  return weeklyMenu;
 };
 
 export const updateWeeklyMenu = async (id: string, menu: IWeeklyMenu) => {

@@ -1,8 +1,17 @@
+import { Box } from '@mui/material';
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import WeeklyMenu from '../components/menus/weekly-menu';
 import { weeklyMenuSeed } from '../data';
+import { IWeeklyMenuWithId } from '../models/weekly-menu.model';
+import { getLatestWeeklyMenu } from '../mongodb/db-weekly-menu';
 
-export default function Home() {
+type HomePageProps = {
+  latestWeeklyMenu?: IWeeklyMenuWithId;
+};
+
+export default function Home(props: HomePageProps) {
+  const { latestWeeklyMenu } = props;
   // const createWeeklyMenuHandler = () => {
   //   fetch('/api/weekly-menus', {
   //     method: 'POST',
@@ -14,17 +23,6 @@ export default function Home() {
   //       console.log(data);
   //     });
   // };
-  const createWeeklyMenuHandler = () => {
-    fetch('/api/weekly-menus/63dc38ac21d879a9a78126df', {
-      method: 'PATCH',
-      body: JSON.stringify(weeklyMenuSeed),
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      });
-  };
   return (
     <>
       <Head>
@@ -34,9 +32,22 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <button onClick={createWeeklyMenuHandler}>Create weekly menu</button>
-        <WeeklyMenu />
+        {latestWeeklyMenu ? (
+          <WeeklyMenu weeklyMenu={latestWeeklyMenu} />
+        ) : (
+          <Box>You have no weekly menus</Box>
+        )}
       </main>
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const latestWeeklyMenu = await getLatestWeeklyMenu();
+  console.log(latestWeeklyMenu);
+  return {
+    props: {
+      latestWeeklyMenu,
+    },
+  };
+};
