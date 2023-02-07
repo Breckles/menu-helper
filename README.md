@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Adding the MONGODB_URI environment variable
+
+Development:
+
+Create a '.env.local' file in your project root (next to package.json) and add the following line:
+
+MONGODB_URI=mongodb+srv://<em>&lt;username&gt;</em>:<em>&lt;password&gt;</em>@cluster0.gqrui.mongodb.net/menu-helper?retryWrites=true&w=majority
+
+(replace <em>&lt;username&gt;</em> and <em>&lt;password&gt;</em> with the appropriate credentials)
