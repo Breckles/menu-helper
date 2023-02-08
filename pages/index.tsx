@@ -1,7 +1,8 @@
 import { Box } from '@mui/material';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetStaticProps } from 'next';
 import Head from 'next/head';
 import WeeklyMenu from '../components/menus/weekly-menu';
+import WeekPicker from '../components/ui/week-picker';
 import { weeklyMenuSeed } from '../data';
 import { IWeeklyMenuWithId } from '../models/weekly-menu.model';
 import { getLatestWeeklyMenu } from '../mongodb/db-weekly-menu';
@@ -32,6 +33,7 @@ export default function Home(props: HomePageProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        <WeekPicker />
         {latestWeeklyMenu ? (
           <WeeklyMenu weeklyMenu={latestWeeklyMenu} />
         ) : (
@@ -42,12 +44,33 @@ export default function Home(props: HomePageProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+// export const getServerSideProps: GetServerSideProps = async () => {
+//   const latestWeeklyMenu = await getLatestWeeklyMenu();
+// const staticReturn: {props: any, revalidate:} = {
+//   props : {
+//     latestWeeklyMenu,
+//   }
+// }
+
+//   if (latestWeeklyMenu) {
+//     staticReturn.revalidate = 2;
+//   }
+
+//   return {};
+// };
+
+export const getStaticProps: GetStaticProps = async () => {
   const latestWeeklyMenu = await getLatestWeeklyMenu();
-  console.log(latestWeeklyMenu);
-  return {
+  const staticReturn: { props: any; revalidate: false | number } = {
     props: {
       latestWeeklyMenu,
     },
+    revalidate: false,
   };
+
+  if (latestWeeklyMenu) {
+    staticReturn.revalidate = 86400;
+  }
+
+  return staticReturn;
 };

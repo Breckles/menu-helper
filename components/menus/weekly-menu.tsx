@@ -8,13 +8,6 @@ import IWeeklyMenu from '../../models/weekly-menu.model';
 
 import classes from './weekly-menu.module.scss';
 
-const devItems = [
-  { id: '1', item: 'Frozen Lasagna' },
-  { id: '2', item: 'Frozen Ravioli' },
-  { id: '3', item: 'Salad kit' },
-  { id: '4', item: 'Box of Wine' },
-];
-
 const weekdayLabels = [
   'Sunday',
   'Monday',
