@@ -2,57 +2,80 @@ import { CalendarPicker } from '@mui/x-date-pickers/CalendarPicker';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { PickersDayProps } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
+import { useState } from 'react';
 
-const styles = {
+type WeekPickerProps = {
+  weekStart?: Dayjs;
+  onWeekChange: (newWeekStart: Dayjs) => void;
+};
+
+const dayStyles = {
+  '&.currentDay': {
+    border: '2px solid #00000080',
+  },
   '&.currentWeek': {
-    backgroundColor: 'red',
+    backgroundColor: '#1976d290',
+    color: 'white',
   },
 };
 
-type WeekPickerProps = {
-  currentWeekStart?: Dayjs;
-};
-
 const WeekPicker = (props: WeekPickerProps) => {
-  let { currentWeekStart } = props;
+  let { weekStart } = props;
 
-  if (!currentWeekStart) {
-    currentWeekStart = dayjs().startOf('week');
+  if (!weekStart) {
+    weekStart = dayjs().startOf('week');
   }
 
-  const nextWeekStart = currentWeekStart
-    ? currentWeekStart.add(1, 'week')
-    : undefined;
+  const [currentWeekStart, setCurrentWeekStart] = useState(weekStart);
+
+  const currentWeekEnd = currentWeekStart.endOf('week');
 
   const dayRenderer = (
     date: Dayjs,
-    selectedDays: Array<Dayjs | null>,
+    _selectedDays: Array<Dayjs | null>,
     pickersDayProps: PickersDayProps<Dayjs>
   ) => {
-    const dayStyles: any = {};
-
     // Only allow Sundays to be selectable
     if (date.day() !== 0) {
       pickersDayProps.disabled = true;
     }
 
-    // Highlight current week
-    if (
-      date.isSame(currentWeekStart) ||
-      (date.isAfter(currentWeekStart) && date.isBefore(nextWeekStart))
-    ) {
-      dayStyles.backgroundColor = 'red';
+    let classNames = '';
+
+    // Mark current day
+    if (date.isSame(dayjs(), 'day')) {
+      classNames += 'currentDay ';
     }
 
-    return <PickersDay sx={dayStyles} {...pickersDayProps}></PickersDay>;
+    // Mark days in current week
+    if (
+      date.isSame(currentWeekStart) ||
+      (date.isAfter(currentWeekStart) && date.isBefore(currentWeekEnd))
+    ) {
+      classNames += 'currentWeek ';
+    }
+
+    return (
+      <PickersDay
+        className={classNames}
+        sx={dayStyles}
+        {...pickersDayProps}
+      ></PickersDay>
+    );
+  };
+
+  const dateChangeHandler = (date: Dayjs | null) => {
+    if (date && !date.isSame(currentWeekStart)) {
+      props.onWeekChange(date);
+      setCurrentWeekStart(date);
+    }
   };
 
   return (
     <CalendarPicker
-      openTo="day"
       date={null}
       renderDay={dayRenderer}
-      onChange={() => {}}
+      onChange={dateChangeHandler}
     ></CalendarPicker>
   );
 };

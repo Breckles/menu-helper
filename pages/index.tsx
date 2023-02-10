@@ -1,11 +1,14 @@
-import { Box } from '@mui/material';
-import { GetServerSideProps, GetStaticProps } from 'next';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
-import WeeklyMenu from '../components/menus/weekly-menu';
-import WeekPicker from '../components/ui/week-picker';
-import { weeklyMenuSeed } from '../data';
+import { useState } from 'react';
+import { Dayjs } from 'dayjs';
+
+import { Box } from '@mui/material';
+
 import { IWeeklyMenuWithId } from '../models/weekly-menu.model';
 import { getLatestWeeklyMenu } from '../mongodb/db-weekly-menu';
+import WeeklyMenu from '../components/menus/weekly-menu';
+import WeekPicker from '../components/ui/week-picker';
 
 type HomePageProps = {
   latestWeeklyMenu?: IWeeklyMenuWithId;
@@ -24,6 +27,36 @@ export default function Home(props: HomePageProps) {
   //       console.log(data);
   //     });
   // };
+
+  const [weeklyMenu, setWeeklyMenu] = useState(latestWeeklyMenu);
+
+  const onWeekChange = async (newWeek: Dayjs) => {
+    console.log('In onWeekChange');
+    console.log(newWeek);
+
+    const response = await fetch(
+      `/api/weekly-menus?date=${newWeek.format('YYYY-MM-DD')}`
+    );
+
+    if (response.ok) {
+      const body = await response.json();
+      console.log(body);
+
+      const menu: IWeeklyMenuWithId = body.weeklyMenu;
+      console.log(menu);
+
+      setWeeklyMenu(menu);
+    } else {
+      setWeeklyMenu(undefined);
+    }
+  };
+
+  // const fetchById = async () => {
+  //   fetch('/api/weekly-menus?id=63e6b620dc7885cc3bfb95b1').then((res) => {
+  //     console.log(res);
+  //   });
+  // };
+
   return (
     <>
       <Head>
@@ -33,9 +66,10 @@ export default function Home(props: HomePageProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <WeekPicker />
-        {latestWeeklyMenu ? (
-          <WeeklyMenu weeklyMenu={latestWeeklyMenu} />
+        {/* <button onClick={fetchById}>Fetch by id</button> */}
+        <WeekPicker onWeekChange={onWeekChange} />
+        {weeklyMenu ? (
+          <WeeklyMenu weeklyMenu={weeklyMenu} />
         ) : (
           <Box>You have no weekly menus</Box>
         )}

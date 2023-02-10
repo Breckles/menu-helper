@@ -5,12 +5,38 @@ import IWeeklyMenu, {
 import {
   createWeeklyMenu,
   getAllWeeklyMenus,
+  getWeeklyMenuByDate,
+  getWeeklyMenuById,
 } from '../../../mongodb/db-weekly-menu';
 
 const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
-  const allWeeklyMenus = await getAllWeeklyMenus();
-  if (allWeeklyMenus) {
-    res.status(200).json({ success: true, allWeeklyMenus });
+  if (req.query.id) {
+    const idQueryString = req.query.id as string;
+
+    const weeklyMenu = await getWeeklyMenuById(idQueryString);
+
+    if (weeklyMenu) {
+      res.status(200).json({ success: true, weeklyMenu });
+    } else {
+      // 404 - Not Found
+      res.status(404).json({ success: false });
+    }
+  } else if (req.query.date) {
+    const dateQueryString = req.query.date as string;
+
+    const weeklyMenu = await getWeeklyMenuByDate(dateQueryString);
+
+    if (weeklyMenu) {
+      res.status(200).json({ success: true, weeklyMenu });
+    } else {
+      // 404 - Not Found
+      res.status(404).json({ success: false });
+    }
+  } else {
+    const allWeeklyMenus = await getAllWeeklyMenus();
+    if (allWeeklyMenus) {
+      res.status(200).json({ success: true, allWeeklyMenus });
+    }
   }
 };
 
@@ -38,10 +64,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     switch (method) {
       case 'GET':
-        handleGet(req, res);
+        await handleGet(req, res);
         break;
       case 'POST':
-        handlePost(req, res);
+        await handlePost(req, res);
         break;
       default:
         // 405 - Method Not Allowed

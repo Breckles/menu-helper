@@ -3,6 +3,20 @@ import { ObjectId } from 'mongodb';
 import db from './db';
 import IWeeklyMenu, { IWeeklyMenuWithId } from '../models/weekly-menu.model';
 
+interface IDBWeeklyMenu extends IWeeklyMenu {
+  _id: ObjectId;
+}
+
+const convertDBDoc = (doc: IDBWeeklyMenu) => {
+  const weeklyMenu: IWeeklyMenuWithId = {
+    _id: doc._id.toString(),
+    weekStartDate: doc.weekStartDate,
+    dailyMenus: doc.dailyMenus,
+  };
+
+  return weeklyMenu;
+};
+
 const weeklyMenus = db.collection<IWeeklyMenu>('weekly-menus');
 
 export const getAllWeeklyMenus = async () => {
@@ -53,7 +67,7 @@ export const createWeeklyMenu = async (menu: IWeeklyMenu) => {
 };
 
 export const getWeeklyMenuById = async (id: string) => {
-  const weeklyMenuDoc = await weeklyMenus.findOne({
+  const weeklyMenuDoc: IDBWeeklyMenu | null = await weeklyMenus.findOne({
     _id: new ObjectId(id),
   });
 
@@ -61,13 +75,19 @@ export const getWeeklyMenuById = async (id: string) => {
     return null;
   }
 
-  const weeklyMenu: IWeeklyMenuWithId = {
-    _id: weeklyMenuDoc._id.toString(),
-    weekStartDate: weeklyMenuDoc.weekStartDate,
-    dailyMenus: weeklyMenuDoc.dailyMenus,
-  };
+  return convertDBDoc(weeklyMenuDoc);
+};
 
-  return weeklyMenu;
+export const getWeeklyMenuByDate = async (date: string) => {
+  const weeklyMenuDoc: IDBWeeklyMenu | null = await weeklyMenus.findOne({
+    weekStartDate: date,
+  });
+
+  if (!weeklyMenuDoc) {
+    return null;
+  }
+
+  return convertDBDoc(weeklyMenuDoc);
 };
 
 export const updateWeeklyMenu = async (id: string, menu: IWeeklyMenu) => {

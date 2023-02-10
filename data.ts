@@ -1,6 +1,10 @@
+import dayjs from 'dayjs';
+
+console.log(dayjs().startOf('week').format('YYYY-MM-DD'));
+console.log(dayjs().startOf('week').day());
+
 export const weeklyMenuSeed = {
-  _id: '63d98a9846132e013a589b64',
-  weekStartDate: '2023/1/29',
+  weekStartDate: dayjs().day(0).format('YYYY-MM-DD'),
   dailyMenus: [
     {
       weekDay: 0,
