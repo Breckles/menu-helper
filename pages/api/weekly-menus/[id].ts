@@ -32,6 +32,7 @@ const handlePatch = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(400).json({ success: false });
     return;
   }
+  debugger;
 
   if (!validateWeeklyMenu(weeklyMenuDB)) {
     // 400 - Bad Request

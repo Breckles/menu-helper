@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef, ChangeEventHandler, ChangeEvent } from 'react';
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -12,6 +12,7 @@ import IDailyMenu from '../../models/daily-menu.model';
 
 type DailyMenuProps = {
   menu: IDailyMenu;
+  onChange: (newMenu: IDailyMenu) => void;
 };
 
 interface IDishesListItem {
@@ -19,19 +20,38 @@ interface IDishesListItem {
   dish: string;
 }
 
-const valueChangeHandler = () => {};
-
 const DailyMenu = (props: DailyMenuProps) => {
   const [dishesList, setDishesList] = useState<IDishesListItem[]>(
-    props.menu.dishes.map((d, i) => ({ key: i, dish: d }))
+    props.menu.dishes.map((dish, i) => ({ key: i, dish }))
   );
-  const inputList: HTMLInputElement[] = [];
+
+  const valueChangeHandler = (
+    event: ChangeEvent<HTMLInputElement>,
+    i: number
+  ) => {
+    const newValue = event.target.value;
+
+    setDishesList((prevItems) => {
+      const newItems = [...prevItems];
+      newItems[i].dish = newValue;
+
+      props.onChange({
+        weekDay: props.menu.weekDay,
+        dishes: newItems.map((item) => item.dish),
+      });
+
+      return newItems;
+    });
+  };
 
   const removeItemHandler = (i: number) => {
-    console.log(i);
     setDishesList((prevItems) => {
       const newItems = [...prevItems];
       newItems.splice(i, 1);
+      props.onChange({
+        weekDay: props.menu.weekDay,
+        dishes: newItems.map((item) => item.dish),
+      });
       return newItems;
     });
   };
@@ -46,6 +66,12 @@ const DailyMenu = (props: DailyMenuProps) => {
       }
 
       newItems.push({ key: nextKey, dish: '' });
+
+      props.onChange({
+        weekDay: props.menu.weekDay,
+        dishes: newItems.map((item) => item.dish),
+      });
+
       return newItems;
     });
   };
@@ -57,7 +83,9 @@ const DailyMenu = (props: DailyMenuProps) => {
         placeholder="Enter New Dish"
         variant="standard"
         defaultValue={item.dish}
-        onChange={valueChangeHandler}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          valueChangeHandler(e, i);
+        }}
       ></TextField>
       <IconButton
         onClick={() => {
@@ -80,5 +108,9 @@ const DailyMenu = (props: DailyMenuProps) => {
     </>
   );
 };
+
+const DailyMenu2 = forwardRef(function DailyMenu2() {
+  return <>Nothing</>;
+});
 
 export default DailyMenu;
