@@ -25,6 +25,8 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePatch = async (req: NextApiRequest, res: NextApiResponse) => {
   const weeklyMenuDB: IWeeklyMenuWithId = req.body;
   const id = req.query.id as string;
+  console.log(weeklyMenuDB['_id']);
+  console.log(id);
 
   // Check if menu in request body contains _id field. If so, ensure it matches the query param.
   if (weeklyMenuDB._id && weeklyMenuDB._id !== id) {
@@ -80,13 +82,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     switch (method) {
       case 'GET':
-        handleGet(req, res);
+        await handleGet(req, res);
         break;
       case 'PATCH':
-        handlePatch(req, res);
+        await handlePatch(req, res);
         break;
       case 'DELETE':
-        handleDelete(req, res);
+        await handleDelete(req, res);
         break;
       default:
         // 405 - Method Not Allowed

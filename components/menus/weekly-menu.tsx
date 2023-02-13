@@ -34,9 +34,10 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
   const displayFormat = 'ddd, MMM DD';
 
   const updateMenuHandler = async () => {
-    const result = await fetch(`/api/weekly-menu/${weeklyMenu._id}`, {
+    const result = await fetch(`/api/weekly-menus/${weeklyMenu._id}`, {
       method: 'PATCH',
       body: JSON.stringify(weeklyMenu),
+      headers: { 'Content-Type': 'application/json' },
     });
   };
 
