@@ -19,6 +19,22 @@ const convertDBDoc = (doc: IDBWeeklyMenu) => {
 
 const weeklyMenus = db.collection<IWeeklyMenu>('weekly-menus');
 
+export const createWeeklyMenu = async (menu: IWeeklyMenu) => {
+  const result = await weeklyMenus.insertOne(menu);
+
+  if (!result.insertedId) {
+    return null;
+  }
+
+  const newWeeklyMenu: IWeeklyMenuWithId = {
+    _id: result.insertedId.toString(),
+    weekStartDate: menu.weekStartDate,
+    dailyMenus: menu.dailyMenus,
+  };
+
+  return newWeeklyMenu;
+};
+
 export const getAllWeeklyMenus = async () => {
   try {
     const cursor = await weeklyMenus.find({});
@@ -48,22 +64,6 @@ export const getLatestWeeklyMenu = async () => {
   };
 
   return weeklyMenu;
-};
-
-export const createWeeklyMenu = async (menu: IWeeklyMenu) => {
-  const result = await weeklyMenus.insertOne(menu);
-
-  if (!result.insertedId) {
-    return null;
-  }
-
-  const newWeeklyMenu: IWeeklyMenuWithId = {
-    _id: result.insertedId.toString(),
-    weekStartDate: menu.weekStartDate,
-    dailyMenus: menu.dailyMenus,
-  };
-
-  return newWeeklyMenu;
 };
 
 export const getWeeklyMenuById = async (id: string) => {

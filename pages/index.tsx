@@ -1,61 +1,74 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { useState } from 'react';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { IWeeklyMenuWithId } from '../models/weekly-menu.model';
-import { getLatestWeeklyMenu } from '../mongodb/db-weekly-menu';
+import { getWeeklyMenuByDate } from '../mongodb/db-weekly-menu';
 import WeeklyMenu from '../components/menus/weekly-menu';
 import WeekPicker from '../components/ui/week-picker';
 
 type HomePageProps = {
-  latestWeeklyMenu?: IWeeklyMenuWithId;
+  currentWeeklyMenu?: IWeeklyMenuWithId;
 };
 
 export default function Home(props: HomePageProps) {
-  const { latestWeeklyMenu } = props;
-  // const createWeeklyMenuHandler = () => {
-  //   fetch('/api/weekly-menus', {
-  //     method: 'POST',
-  //     body: JSON.stringify(weeklyMenuSeed),
-  //     headers: { 'Content-Type': 'application/json' },
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //     });
-  // };
+  const { currentWeeklyMenu } = props;
 
-  const [weeklyMenu, setWeeklyMenu] = useState(latestWeeklyMenu);
+  const [weeklyMenu, setWeeklyMenu] = useState(currentWeeklyMenu);
+  const [displayWeekStart, setDisplayWeekStart] = useState(
+    dayjs(weeklyMenu?.weekStartDate).startOf('week')
+  );
+  const [isCreateMode, setIsCreateMode] = useState(false);
+
+  // const weekStart = dayjs(weeklyMenu?.weekStartDate).startOf('week');
+  const weekEnd = displayWeekStart.endOf('week');
+  const displayFormat = 'ddd, MMM DD';
+
+  const createMenuHandler = () => {
+    console.log('in createMenuHandler');
+
+    setIsCreateMode(true);
+  };
 
   const onWeekChange = async (newWeek: Dayjs) => {
-    console.log('In onWeekChange');
-    console.log(newWeek);
-
     const response = await fetch(
       `/api/weekly-menus?date=${newWeek.format('YYYY-MM-DD')}`
     );
 
     if (response.ok) {
       const body = await response.json();
-      console.log(body);
 
       const menu: IWeeklyMenuWithId = body.weeklyMenu;
-      console.log(menu);
 
       setWeeklyMenu(menu);
     } else {
       setWeeklyMenu(undefined);
     }
+
+    setDisplayWeekStart(newWeek);
+    setIsCreateMode(false);
   };
 
-  // const fetchById = async () => {
-  //   fetch('/api/weekly-menus?id=63e6b620dc7885cc3bfb95b1').then((res) => {
-  //     console.log(res);
-  //   });
-  // };
+  let content: JSX.Element = (
+    <>
+      It looks like you have no menu for this week
+      <button onClick={createMenuHandler}>Create weekly menu</button>
+    </>
+  );
+
+  if (weeklyMenu) {
+    content = (
+      <WeeklyMenu
+        weekStart={displayWeekStart.format('YYYY-MM-DD')}
+        weeklyMenu={weeklyMenu}
+      />
+    );
+  } else if (isCreateMode) {
+    content = <WeeklyMenu weekStart={displayWeekStart.format('YYYY-MM-DD')} />;
+  }
 
   return (
     <>
@@ -66,48 +79,30 @@ export default function Home(props: HomePageProps) {
         <link rel="icon" href="/favicon.svg" />
       </Head>
       <main>
-        {/* <button onClick={fetchById}>Fetch by id</button> */}
         <Box>
           <WeekPicker onWeekChange={onWeekChange} />
-          {weeklyMenu ? (
-            <WeeklyMenu weeklyMenu={weeklyMenu} />
-          ) : (
-            <>
-              It looks like you have no menu for this week
-              <button>Create weekly menu</button>
-            </>
-          )}
+          <Typography>
+            {displayWeekStart.format(displayFormat)} -{' '}
+            {weekEnd.format(displayFormat)}
+          </Typography>
+          {content}
         </Box>
       </main>
     </>
   );
 }
 
-// export const getServerSideProps: GetServerSideProps = async () => {
-//   const latestWeeklyMenu = await getLatestWeeklyMenu();
-// const staticReturn: {props: any, revalidate:} = {
-//   props : {
-//     latestWeeklyMenu,
-//   }
-// }
-
-//   if (latestWeeklyMenu) {
-//     staticReturn.revalidate = 2;
-//   }
-
-//   return {};
-// };
-
 export const getStaticProps: GetStaticProps = async () => {
-  const latestWeeklyMenu = await getLatestWeeklyMenu();
+  const currentWeekStartString = dayjs().startOf('week').format('YY-MM-DD');
+  const currentWeeklyMenu = await getWeeklyMenuByDate(currentWeekStartString);
   const staticReturn: { props: any; revalidate: false | number } = {
     props: {
-      latestWeeklyMenu,
+      latestWeeklyMenu: currentWeeklyMenu,
     },
     revalidate: false,
   };
 
-  if (latestWeeklyMenu) {
+  if (currentWeeklyMenu) {
     staticReturn.revalidate = 86400;
   }
 
