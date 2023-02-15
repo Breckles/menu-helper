@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import dayjs from 'dayjs';
 
 import Box from '@mui/material/Box';
@@ -33,66 +34,88 @@ type WeeklyMenuProps = {
 };
 
 const WeeklyMenu = (props: WeeklyMenuProps) => {
-  const { weeklyMenu: existingMenu } = props;
-  const updateMode = !!existingMenu;
-  console.log(updateMode);
+  const existingMenu = props.weeklyMenu;
+  const [isCreateMode, setIsCreateMode] = useState(false);
 
-  const weeklyMenu: IWeeklyMenu = existingMenu
-    ? {
-        weekStartDate: existingMenu.weekStartDate,
-        dailyMenus: existingMenu.dailyMenus,
-      }
-    : createNewWeeklyMenu(props.weekStart);
+  const [weeklyMenu, setWeeklyMenu] = useState(
+    existingMenu
+      ? ({
+          weekStartDate: existingMenu.weekStartDate,
+          dailyMenus: existingMenu.dailyMenus,
+        } as IWeeklyMenu)
+      : null
+  );
 
   const submitHandler = async () => {
-    if (existingMenu) {
-      const result = await fetch(`/api/weekly-menus/${existingMenu._id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(weeklyMenu),
-        headers: { 'Content-Type': 'application/json' },
-      });
+    const method = existingMenu ? 'PATCH' : 'POST';
+    const url = existingMenu
+      ? `/api/weekly-menus/${existingMenu._id}`
+      : `/api/weekly-menus`;
 
-      if (result.ok) {
-        console.log('updated WeeklyMenu successfully');
-      } else {
-        console.log('failed to update WeeklyMenu');
+    const result = await fetch(url, {
+      method,
+      body: JSON.stringify(weeklyMenu),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (result.ok) {
+      // update/create successful
+      if (method === 'PATCH') {
       }
     } else {
-      const result = await fetch(`/api/weekly-menus`, {
-        method: 'POST',
-        body: JSON.stringify(weeklyMenu),
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (result.ok) {
-        console.log('created WeeklyMenu successfully');
-      } else {
-        console.log('failed to create WeeklyMenu');
-      }
+      console.log('Error occurred during request.');
     }
   };
 
-  const onChangeHandler = (updatedDailyMenu: IDailyMenu) => {
-    weeklyMenu.dailyMenus[updatedDailyMenu.weekDay] = updatedDailyMenu;
+  const toggleCreateMode = () => {
+    if (isCreateMode) {
+      setWeeklyMenu(null);
+    } else {
+      const blankMenu = createNewWeeklyMenu(props.weekStart);
+      setWeeklyMenu(blankMenu);
+    }
+    setIsCreateMode((current) => !current);
   };
 
-  const dailyMenus = weeklyMenu.dailyMenus.map((dm, i) => (
-    <ListItem key={dm.weekDay} className={classes.dailyMenu}>
-      <Typography variant="h3">
-        {dayjs().day(dm.weekDay).format('dddd')}
-      </Typography>
-      <DailyMenu menu={dm} onChange={onChangeHandler} />
-    </ListItem>
-  ));
+  const onChangeHandler = (updatedDailyMenu: IDailyMenu) => {
+    if (weeklyMenu) {
+      weeklyMenu.dailyMenus[updatedDailyMenu.weekDay] = updatedDailyMenu;
+    }
+  };
 
-  return (
-    <Box className={classes.container}>
-      <button onClick={submitHandler}>
-        {updateMode ? 'Update menu' : 'Create Menu'}
-      </button>
-      <List className={classes.dailyMenus}>{dailyMenus}</List>
-    </Box>
+  let content = (
+    <>
+      It looks like you have no menu for this week
+      <button onClick={toggleCreateMode}>Create weekly menu</button>
+    </>
   );
+
+  if (weeklyMenu) {
+    const dailyMenus = weeklyMenu.dailyMenus.map((dm, i) => (
+      <ListItem key={dm.weekDay} className={classes.dailyMenu}>
+        <Typography variant="h3">
+          {dayjs().day(dm.weekDay).format('dddd')}
+        </Typography>
+        <DailyMenu menu={dm} onChange={onChangeHandler} />
+      </ListItem>
+    ));
+
+    content = (
+      <form onSubmit={submitHandler}>
+        <button type="submit">
+          {isCreateMode ? 'Create menu' : 'Update Menu'}
+        </button>
+        {isCreateMode && (
+          <button type="button" onClick={toggleCreateMode}>
+            Cancel
+          </button>
+        )}
+        <List className={classes.dailyMenus}>{dailyMenus}</List>
+      </form>
+    );
+  }
+
+  return <Box className={classes.container}>{content}</Box>;
 };
 
 export default WeeklyMenu;

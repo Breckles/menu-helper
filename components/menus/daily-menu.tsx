@@ -99,7 +99,7 @@ const DailyMenu = (props: DailyMenuProps) => {
 
   return (
     <>
-      <Box component="form" className="dailyMenuForm">
+      <Box>
         <List>{inputs}</List>
         <Button variant="contained" type="button" onClick={addItemHandler}>
           Add Item

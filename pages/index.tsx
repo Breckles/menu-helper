@@ -21,17 +21,10 @@ export default function Home(props: HomePageProps) {
   const [displayWeekStart, setDisplayWeekStart] = useState(
     dayjs(weeklyMenu?.weekStartDate).startOf('week')
   );
-  const [isCreateMode, setIsCreateMode] = useState(false);
 
   // const weekStart = dayjs(weeklyMenu?.weekStartDate).startOf('week');
   const weekEnd = displayWeekStart.endOf('week');
   const displayFormat = 'ddd, MMM DD';
-
-  const createMenuHandler = () => {
-    console.log('in createMenuHandler');
-
-    setIsCreateMode(true);
-  };
 
   const onWeekChange = async (newWeek: Dayjs) => {
     const response = await fetch(
@@ -49,26 +42,7 @@ export default function Home(props: HomePageProps) {
     }
 
     setDisplayWeekStart(newWeek);
-    setIsCreateMode(false);
   };
-
-  let content: JSX.Element = (
-    <>
-      It looks like you have no menu for this week
-      <button onClick={createMenuHandler}>Create weekly menu</button>
-    </>
-  );
-
-  if (weeklyMenu) {
-    content = (
-      <WeeklyMenu
-        weekStart={displayWeekStart.format('YYYY-MM-DD')}
-        weeklyMenu={weeklyMenu}
-      />
-    );
-  } else if (isCreateMode) {
-    content = <WeeklyMenu weekStart={displayWeekStart.format('YYYY-MM-DD')} />;
-  }
 
   return (
     <>
@@ -85,7 +59,10 @@ export default function Home(props: HomePageProps) {
             {displayWeekStart.format(displayFormat)} -{' '}
             {weekEnd.format(displayFormat)}
           </Typography>
-          {content}
+          <WeeklyMenu
+            weekStart={displayWeekStart.format('YYYY-MM-DD')}
+            weeklyMenu={weeklyMenu}
+          />
         </Box>
       </main>
     </>
