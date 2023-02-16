@@ -33,6 +33,7 @@ export default function Home(props: HomePageProps) {
 
     if (response.ok) {
       const body = await response.json();
+      console.log(body.weeklyMenu);
 
       const menu: IWeeklyMenuWithId = body.weeklyMenu;
 
@@ -41,7 +42,7 @@ export default function Home(props: HomePageProps) {
       setWeeklyMenu(undefined);
     }
 
-    setDisplayWeekStart(newWeek);
+    // setDisplayWeekStart(newWeek);
   };
 
   return (

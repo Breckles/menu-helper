@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { ThemeProvider, Theme, SxProps } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 
 import Header from './header';
 import Footer from './footer';
@@ -10,14 +10,10 @@ type LayoutProps = {
   children: React.ReactNode;
 };
 
-const sx: SxProps<Theme> = {
-  display: 'flex',
-};
-
 const Layout = (props: LayoutProps) => {
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={sx}>
+      <Box>
         <Header />
         <main>{props.children}</main>
         <Footer />

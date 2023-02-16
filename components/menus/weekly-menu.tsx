@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 
 import Box from '@mui/material/Box';
@@ -10,8 +10,6 @@ import IWeeklyMenu, { IWeeklyMenuWithId } from '../../models/weekly-menu.model';
 import IDailyMenu from '../../models/daily-menu.model';
 
 import DailyMenu from './daily-menu';
-
-import classes from './weekly-menu.module.scss';
 
 const createNewWeeklyMenu = (weekStartDate: string) => {
   const dailyMenus: IDailyMenu[] = [];
@@ -34,6 +32,10 @@ type WeeklyMenuProps = {
 };
 
 const WeeklyMenu = (props: WeeklyMenuProps) => {
+  useEffect(() => {
+    setWeeklyMenu(props.weeklyMenu || null);
+  }, [props.weeklyMenu]);
+
   const existingMenu = props.weeklyMenu;
   const [isCreateMode, setIsCreateMode] = useState(false);
 
@@ -92,7 +94,7 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
 
   if (weeklyMenu) {
     const dailyMenus = weeklyMenu.dailyMenus.map((dm, i) => (
-      <ListItem key={dm.weekDay} className={classes.dailyMenu}>
+      <ListItem key={dm.weekDay}>
         <Typography variant="h3">
           {dayjs().day(dm.weekDay).format('dddd')}
         </Typography>
@@ -110,12 +112,12 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
             Cancel
           </button>
         )}
-        <List className={classes.dailyMenus}>{dailyMenus}</List>
+        <List>{dailyMenus}</List>
       </form>
     );
   }
 
-  return <Box className={classes.container}>{content}</Box>;
+  return <Box>{content}</Box>;
 };
 
 export default WeeklyMenu;
