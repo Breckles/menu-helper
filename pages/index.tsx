@@ -1,4 +1,4 @@
-import { GetStaticProps } from 'next';
+import { GetServerSideProps, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
@@ -11,13 +11,13 @@ import WeeklyMenu from '../components/menus/weekly-menu';
 import WeekPicker from '../components/ui/week-picker';
 
 type HomePageProps = {
-  currentWeeklyMenu?: IWeeklyMenuWithId;
+  currentWeekMenu?: IWeeklyMenuWithId;
 };
 
 export default function Home(props: HomePageProps) {
-  const { currentWeeklyMenu } = props;
+  const { currentWeekMenu } = props;
 
-  const [weeklyMenu, setWeeklyMenu] = useState(currentWeeklyMenu);
+  const [weeklyMenu, setWeeklyMenu] = useState(currentWeekMenu);
   const [displayWeekStart, setDisplayWeekStart] = useState(
     dayjs(weeklyMenu?.weekStartDate).startOf('week')
   );
@@ -33,7 +33,7 @@ export default function Home(props: HomePageProps) {
 
     if (response.ok) {
       const body = await response.json();
-      console.log(body.weeklyMenu);
+      console.log('in onweekchange %o', body.weeklyMenu);
 
       const menu: IWeeklyMenuWithId = body.weeklyMenu;
 
@@ -42,7 +42,7 @@ export default function Home(props: HomePageProps) {
       setWeeklyMenu(undefined);
     }
 
-    // setDisplayWeekStart(newWeek);
+    setDisplayWeekStart(newWeek);
   };
 
   return (
@@ -62,26 +62,32 @@ export default function Home(props: HomePageProps) {
         </Typography>
         <WeeklyMenu
           weekStart={displayWeekStart.format('YYYY-MM-DD')}
-          weeklyMenu={weeklyMenu}
+          weeklyMenuWithId={weeklyMenu}
         />
       </Box>
     </>
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const currentWeekStartString = dayjs().startOf('week').format('YY-MM-DD');
-  const currentWeeklyMenu = await getWeeklyMenuByDate(currentWeekStartString);
-  const staticReturn: { props: any; revalidate: false | number } = {
+export const getServerSideProps: GetServerSideProps = async () => {
+  const currentWeekStartString = dayjs().startOf('week').format('YYYY-MM-DD');
+  const currentWeekMenu = await getWeeklyMenuByDate(currentWeekStartString);
+  // const staticReturn: { props: any; revalidate: false | number } = {
+  //   props: {
+  //     latestWeeklyMenu: currentWeeklyMenu,
+  //   },
+  //   revalidate: false,
+  // };
+
+  // if (currentWeekMenu) {
+  //   staticReturn.revalidate = 86400;
+  // }
+
+  const serverProps = {
     props: {
-      latestWeeklyMenu: currentWeeklyMenu,
+      currentWeekMenu,
     },
-    revalidate: false,
   };
 
-  if (currentWeeklyMenu) {
-    staticReturn.revalidate = 86400;
-  }
-
-  return staticReturn;
+  return serverProps;
 };

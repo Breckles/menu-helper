@@ -1,4 +1,10 @@
-import { useState, forwardRef, ChangeEventHandler, ChangeEvent } from 'react';
+import {
+  useState,
+  forwardRef,
+  ChangeEventHandler,
+  ChangeEvent,
+  useEffect,
+} from 'react';
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -21,9 +27,11 @@ interface IDishesListItem {
 }
 
 const DailyMenu = (props: DailyMenuProps) => {
-  const [dishesList, setDishesList] = useState<IDishesListItem[]>(
-    props.menu.dishes.map((dish, i) => ({ key: i, dish }))
-  );
+  const [dishesList, setDishesList] = useState<IDishesListItem[]>([]);
+
+  useEffect(() => {
+    setDishesList(props.menu.dishes.map((dish, i) => ({ key: i, dish })));
+  }, [props.menu]);
 
   const valueChangeHandler = (
     event: ChangeEvent<HTMLInputElement>,

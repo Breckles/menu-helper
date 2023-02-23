@@ -28,30 +28,29 @@ const createNewWeeklyMenu = (weekStartDate: string) => {
 
 type WeeklyMenuProps = {
   weekStart: string;
-  weeklyMenu?: IWeeklyMenuWithId;
+  weeklyMenuWithId?: IWeeklyMenuWithId;
 };
 
 const WeeklyMenu = (props: WeeklyMenuProps) => {
-  useEffect(() => {
-    setWeeklyMenu(props.weeklyMenu || null);
-  }, [props.weeklyMenu]);
-
-  const existingMenu = props.weeklyMenu;
+  // const existingMenu = props.weeklyMenu;
   const [isCreateMode, setIsCreateMode] = useState(false);
 
-  const [weeklyMenu, setWeeklyMenu] = useState(
-    existingMenu
-      ? ({
-          weekStartDate: existingMenu.weekStartDate,
-          dailyMenus: existingMenu.dailyMenus,
-        } as IWeeklyMenu)
-      : null
+  const [weeklyMenu, setWeeklyMenu] = useState<IWeeklyMenu | undefined>(
+    undefined
   );
 
+  useEffect(() => {
+    console.log('in useEffect %o', props.weeklyMenuWithId);
+
+    setWeeklyMenu(props.weeklyMenuWithId);
+  }, [props.weeklyMenuWithId]);
+
+  console.log('in WeeklyMenu %o', weeklyMenu);
+
   const submitHandler = async () => {
-    const method = existingMenu ? 'PATCH' : 'POST';
-    const url = existingMenu
-      ? `/api/weekly-menus/${existingMenu._id}`
+    const method = props.weeklyMenuWithId ? 'PATCH' : 'POST';
+    const url = props.weeklyMenuWithId
+      ? `/api/weekly-menus/${props.weeklyMenuWithId._id}`
       : `/api/weekly-menus`;
 
     const result = await fetch(url, {
@@ -71,7 +70,7 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
 
   const toggleCreateMode = () => {
     if (isCreateMode) {
-      setWeeklyMenu(null);
+      setWeeklyMenu(undefined);
     } else {
       const blankMenu = createNewWeeklyMenu(props.weekStart);
       setWeeklyMenu(blankMenu);
@@ -93,6 +92,8 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
   );
 
   if (weeklyMenu) {
+    console.log('about to create list of dailyMenus %o', weeklyMenu);
+    
     const dailyMenus = weeklyMenu.dailyMenus.map((dm, i) => (
       <ListItem key={dm.weekDay}>
         <Typography variant="h3">
