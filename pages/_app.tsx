@@ -12,6 +12,11 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.svg" />
+        <title>Menu Helper</title>
+        <meta
+          name="description"
+          content="A simple application to help build and persist a weekly food menu."
+        />
       </Head>
       <Layout>
         <Component {...pageProps} />

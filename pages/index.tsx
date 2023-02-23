@@ -1,5 +1,4 @@
 import { GetServerSideProps, GetStaticProps } from 'next';
-import Head from 'next/head';
 import { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 
@@ -22,8 +21,7 @@ export default function Home(props: HomePageProps) {
     dayjs(weeklyMenu?.weekStartDate).startOf('week')
   );
 
-  // const weekStart = dayjs(weeklyMenu?.weekStartDate).startOf('week');
-  const weekEnd = displayWeekStart.endOf('week');
+  const displayWeekEnd = displayWeekStart.endOf('week');
   const displayFormat = 'ddd, MMM DD';
 
   const onWeekChange = async (newWeek: Dayjs) => {
@@ -33,10 +31,7 @@ export default function Home(props: HomePageProps) {
 
     if (response.ok) {
       const body = await response.json();
-      console.log('in onweekchange %o', body.weeklyMenu);
-
       const menu: IWeeklyMenuWithId = body.weeklyMenu;
-
       setWeeklyMenu(menu);
     } else {
       setWeeklyMenu(undefined);
@@ -47,18 +42,11 @@ export default function Home(props: HomePageProps) {
 
   return (
     <>
-      <Head>
-        <title>Menu Helper</title>
-        <meta
-          name="description"
-          content="A simple application to help build and persist a weekly food menu."
-        />
-      </Head>
       <Box>
         <WeekPicker onWeekChange={onWeekChange} />
         <Typography>
           {displayWeekStart.format(displayFormat)} -{' '}
-          {weekEnd.format(displayFormat)}
+          {displayWeekEnd.format(displayFormat)}
         </Typography>
         <WeeklyMenu
           weekStart={displayWeekStart.format('YYYY-MM-DD')}

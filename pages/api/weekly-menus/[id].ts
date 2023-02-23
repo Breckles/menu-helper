@@ -25,8 +25,6 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePatch = async (req: NextApiRequest, res: NextApiResponse) => {
   const weeklyMenuDB: IWeeklyMenuWithId = req.body;
   const id = req.query.id as string;
-  console.log(weeklyMenuDB['_id']);
-  console.log(id);
 
   // Check if menu in request body contains _id field. If so, ensure it matches the query param.
   if (weeklyMenuDB._id && weeklyMenuDB._id !== id) {

@@ -40,12 +40,8 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
   );
 
   useEffect(() => {
-    console.log('in useEffect %o', props.weeklyMenuWithId);
-
     setWeeklyMenu(props.weeklyMenuWithId);
   }, [props.weeklyMenuWithId]);
-
-  console.log('in WeeklyMenu %o', weeklyMenu);
 
   const submitHandler = async () => {
     const method = props.weeklyMenuWithId ? 'PATCH' : 'POST';
@@ -92,8 +88,6 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
   );
 
   if (weeklyMenu) {
-    console.log('about to create list of dailyMenus %o', weeklyMenu);
-    
     const dailyMenus = weeklyMenu.dailyMenus.map((dm, i) => (
       <ListItem key={dm.weekDay}>
         <Typography variant="h3">
