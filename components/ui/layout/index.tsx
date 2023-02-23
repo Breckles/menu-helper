@@ -4,7 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import Header from './header';
 import Footer from './footer';
 
-import theme from './theme';
+import theme from '../../../styles/theme';
 
 type LayoutProps = {
   children: React.ReactNode;

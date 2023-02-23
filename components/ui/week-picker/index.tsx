@@ -1,13 +1,20 @@
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { CalendarPicker } from '@mui/x-date-pickers/CalendarPicker';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { PickersDayProps } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
+import Box from '@mui/material/Box';
+import { TextField } from '@mui/material';
 
 type WeekPickerProps = {
   weekStart?: Dayjs;
   onWeekChange: (newWeekStart: Dayjs) => void;
 };
+
+const desktopStyles = {};
+
+const mobileStyles = {};
 
 const dayStyles = {
   '&.currentDay': {
@@ -72,11 +79,27 @@ const WeekPicker = (props: WeekPickerProps) => {
   };
 
   return (
-    <CalendarPicker
-      date={null}
-      renderDay={dayRenderer}
-      onChange={dateChangeHandler}
-    ></CalendarPicker>
+    <>
+      <Box
+        sx={{ display: { mobile: 'none', tablet: 'unset', desktop: 'unset' } }}
+      >
+        <CalendarPicker
+          date={null}
+          renderDay={dayRenderer}
+          onChange={dateChangeHandler}
+        />
+      </Box>
+      <Box
+        sx={{ display: { mobile: 'unset', tablet: 'none', desktop: 'none' } }}
+      >
+        <MobileDatePicker
+          renderDay={dayRenderer}
+          onChange={dateChangeHandler}
+          renderInput={(props) => <TextField {...props} />}
+          value={currentWeekStart}
+        />
+      </Box>
+    </>
   );
 };
 
