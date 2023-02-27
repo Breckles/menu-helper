@@ -2,15 +2,25 @@ import { GetServerSideProps, GetStaticProps } from 'next';
 import { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 
-import { Box, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import theme from '../styles/theme';
 
 import { IWeeklyMenuWithId } from '../models/weekly-menu.model';
 import { getWeeklyMenuByDate } from '../mongodb/db-weekly-menu';
-import WeeklyMenu from '../components/menus/weekly-menu';
+
 import WeekPicker from '../components/ui/week-picker';
+import WeeklyMenu from '../components/menus/weekly-menu';
 
 type HomePageProps = {
   currentWeekMenu?: IWeeklyMenuWithId;
+};
+
+const homePageStyles = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: { mobile: theme.spacing(2) },
 };
 
 export default function Home(props: HomePageProps) {
@@ -41,19 +51,17 @@ export default function Home(props: HomePageProps) {
   };
 
   return (
-    <>
-      <Box>
-        <WeekPicker onWeekChange={onWeekChange} />
-        <Typography>
-          {displayWeekStart.format(displayFormat)} -{' '}
-          {displayWeekEnd.format(displayFormat)}
-        </Typography>
-        <WeeklyMenu
-          weekStart={displayWeekStart.format('YYYY-MM-DD')}
-          weeklyMenuWithId={weeklyMenu}
-        />
-      </Box>
-    </>
+    <Box sx={homePageStyles}>
+      <WeekPicker onWeekChange={onWeekChange} />
+      <Typography variant="h2">
+        {displayWeekStart.format(displayFormat)} -{' '}
+        {displayWeekEnd.format(displayFormat)}
+      </Typography>
+      <WeeklyMenu
+        weekStart={displayWeekStart.format('YYYY-MM-DD')}
+        weeklyMenuWithId={weeklyMenu}
+      />
+    </Box>
   );
 }
 

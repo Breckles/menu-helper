@@ -1,5 +1,7 @@
+import Box from '@mui/material/Box';
+
 const Footer = () => {
-  return <footer>Footer component</footer>;
+  return <Box component={'footer'}>Footer component</Box>;
 };
 
 export default Footer;

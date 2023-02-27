@@ -10,12 +10,28 @@ type LayoutProps = {
   children: React.ReactNode;
 };
 
+const layoutStyles = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(2),
+  padding: {
+    mobile: `${theme.spacing(1)} 0`,
+  },
+  minHeight: '100vh',
+};
+
+const mainStyles = {
+  flex: 1,
+};
+
 const Layout = (props: LayoutProps) => {
   return (
     <ThemeProvider theme={theme}>
-      <Box>
+      <Box sx={layoutStyles}>
         <Header />
-        <main>{props.children}</main>
+        <Box component={'main'} sx={mainStyles}>
+          {props.children}
+        </Box>
         <Footer />
       </Box>
     </ThemeProvider>

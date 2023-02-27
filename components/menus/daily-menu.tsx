@@ -1,10 +1,4 @@
-import {
-  useState,
-  forwardRef,
-  ChangeEventHandler,
-  ChangeEvent,
-  useEffect,
-} from 'react';
+import { useState, forwardRef, ChangeEvent, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -16,15 +10,30 @@ import ListItem from '@mui/material/ListItem';
 import Button from '@mui/material/Button';
 import IDailyMenu from '../../models/daily-menu.model';
 
-type DailyMenuProps = {
-  menu: IDailyMenu;
-  onChange: (newMenu: IDailyMenu) => void;
+const dailyMenuStyles = {
+  display: 'flex',
+  justifyContent: 'space-evenly',
+  alignItems: 'end',
+  '.MuiList-root': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+    padding: 0,
+  },
+  '.MuiListItem-root': {
+    padding: '0 16px',
+  },
 };
 
 interface IDishesListItem {
   key: number;
   dish: string;
 }
+
+type DailyMenuProps = {
+  menu: IDailyMenu;
+  onChange: (newMenu: IDailyMenu) => void;
+};
 
 const DailyMenu = (props: DailyMenuProps) => {
   const [dishesList, setDishesList] = useState<IDishesListItem[]>([]);
@@ -106,14 +115,12 @@ const DailyMenu = (props: DailyMenuProps) => {
   ));
 
   return (
-    <>
-      <Box>
-        <List>{inputs}</List>
-        <Button variant="contained" type="button" onClick={addItemHandler}>
-          Add Item
-        </Button>
-      </Box>
-    </>
+    <Box sx={dailyMenuStyles}>
+      <List>{inputs}</List>
+      <Button variant="contained" type="button" onClick={addItemHandler}>
+        Add Item
+      </Button>
+    </Box>
   );
 };
 

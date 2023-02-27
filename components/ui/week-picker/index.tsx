@@ -12,10 +12,6 @@ type WeekPickerProps = {
   onWeekChange: (newWeekStart: Dayjs) => void;
 };
 
-const desktopStyles = {};
-
-const mobileStyles = {};
-
 const dayStyles = {
   '&.currentDay': {
     border: '2px solid #00000080',
@@ -78,20 +74,24 @@ const WeekPicker = (props: WeekPickerProps) => {
     }
   };
 
+  const desktopStyles = {
+    display: { mobile: 'none', tablet: 'unset' },
+  };
+
+  const mobileStyles = {
+    display: { mobile: 'unset', tablet: 'none' },
+  };
+
   return (
     <>
-      <Box
-        sx={{ display: { mobile: 'none', tablet: 'unset', desktop: 'unset' } }}
-      >
+      <Box sx={desktopStyles}>
         <CalendarPicker
           date={null}
           renderDay={dayRenderer}
           onChange={dateChangeHandler}
         />
       </Box>
-      <Box
-        sx={{ display: { mobile: 'unset', tablet: 'none', desktop: 'none' } }}
-      >
+      <Box sx={mobileStyles}>
         <MobileDatePicker
           renderDay={dayRenderer}
           onChange={dateChangeHandler}

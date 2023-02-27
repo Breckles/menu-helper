@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import dayjs from 'dayjs';
+import { useState, useEffect, FormEventHandler } from 'react';
+import theme from '../../../styles/theme';
 
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 
-import IWeeklyMenu, { IWeeklyMenuWithId } from '../../models/weekly-menu.model';
-import IDailyMenu from '../../models/daily-menu.model';
+import IWeeklyMenu, {
+  IWeeklyMenuWithId,
+} from '../../../models/weekly-menu.model';
+import IDailyMenu from '../../../models/daily-menu.model';
 
-import DailyMenu from './daily-menu';
+import MobileMenu from './mobile-menu';
+import DesktopMenu from './desktop-menu';
 
 const createNewWeeklyMenu = (weekStartDate: string) => {
   const dailyMenus: IDailyMenu[] = [];
@@ -26,27 +26,41 @@ const createNewWeeklyMenu = (weekStartDate: string) => {
   return weeklyMenu;
 };
 
+const mobileStyles = {
+  display: { mobile: 'block', tablet: 'none' },
+  height: 'fit-content',
+};
+
+const desktopStyles = {
+  display: { mobile: 'none', tablet: 'block' },
+};
+
 type WeeklyMenuProps = {
   weekStart: string;
   weeklyMenuWithId?: IWeeklyMenuWithId;
 };
 
+interface ICurrentWeeklyMenu extends IWeeklyMenu {
+  _id?: string;
+}
+
 const WeeklyMenu = (props: WeeklyMenuProps) => {
-  // const existingMenu = props.weeklyMenu;
   const [isCreateMode, setIsCreateMode] = useState(false);
 
-  const [weeklyMenu, setWeeklyMenu] = useState<IWeeklyMenu | undefined>(
-    undefined
+  const [weeklyMenu, setWeeklyMenu] = useState<ICurrentWeeklyMenu | undefined>(
+    props.weeklyMenuWithId ? props.weeklyMenuWithId : undefined
   );
 
   useEffect(() => {
     setWeeklyMenu(props.weeklyMenuWithId);
   }, [props.weeklyMenuWithId]);
 
-  const submitHandler = async () => {
-    const method = props.weeklyMenuWithId ? 'PATCH' : 'POST';
-    const url = props.weeklyMenuWithId
-      ? `/api/weekly-menus/${props.weeklyMenuWithId._id}`
+  const submitHandler: FormEventHandler = async (e) => {
+    e.preventDefault();
+
+    const method = weeklyMenu!._id ? 'PATCH' : 'POST';
+    const url = weeklyMenu!._id
+      ? `/api/weekly-menus/${weeklyMenu!._id}`
       : `/api/weekly-menus`;
 
     const result = await fetch(url, {
@@ -57,7 +71,11 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
 
     if (result.ok) {
       // update/create successful
-      if (method === 'PATCH') {
+      if (method === 'POST') {
+        const responseData = await result.json();
+        const newWeeklyMenu = responseData.newWeeklyMenu as IWeeklyMenuWithId;
+        setIsCreateMode(false);
+        setWeeklyMenu(newWeeklyMenu);
       }
     } else {
       console.log('Error occurred during request.');
@@ -88,31 +106,27 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
   );
 
   if (weeklyMenu) {
-    const dailyMenus = weeklyMenu.dailyMenus.map((dm, i) => (
-      <ListItem key={dm.weekDay}>
-        <Typography variant="h3">
-          {dayjs().day(dm.weekDay).format('dddd')}
-        </Typography>
-        <DailyMenu menu={dm} onChange={onChangeHandler} />
-      </ListItem>
-    ));
-
     content = (
-      <form onSubmit={submitHandler}>
-        <button type="submit">
-          {isCreateMode ? 'Create menu' : 'Update Menu'}
-        </button>
+      <Box component={'form'} onSubmit={submitHandler}>
         {isCreateMode && (
           <button type="button" onClick={toggleCreateMode}>
             Cancel
           </button>
         )}
-        <List>{dailyMenus}</List>
-      </form>
+        <Box sx={mobileStyles}>
+          <MobileMenu weeklyMenu={weeklyMenu} onChange={onChangeHandler} />
+        </Box>
+        <Box sx={desktopStyles}>
+          <DesktopMenu weeklyMenu={weeklyMenu} onChange={onChangeHandler} />
+        </Box>
+        <button type="submit">
+          {isCreateMode ? 'Create menu' : 'Update Menu'}
+        </button>
+      </Box>
     );
   }
 
-  return <Box>{content}</Box>;
+  return <Box sx={{ maxWidth: '100%' }}>{content}</Box>;
 };
 
 export default WeeklyMenu;

@@ -15,13 +15,17 @@ declare module '@mui/material/styles' {
   }
 }
 
-const theme = createTheme({
+let theme = createTheme({
   breakpoints: {
     values: {
       mobile: 375,
       tablet: 750,
       desktop: 1440,
     },
+  },
+  typography: {
+    h1: { fontSize: '1.4rem' },
+    h2: { fontSize: '1.3rem' },
   },
 });
 
