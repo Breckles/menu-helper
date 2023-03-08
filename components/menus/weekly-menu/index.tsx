@@ -1,5 +1,4 @@
 import { useState, useEffect, FormEventHandler } from 'react';
-import theme from '../../../styles/theme';
 
 import Box from '@mui/material/Box';
 
@@ -10,12 +9,13 @@ import IDailyMenu from '../../../models/daily-menu.model';
 
 import MobileMenu from './mobile-menu';
 import DesktopMenu from './desktop-menu';
+import { SxProps } from '@mui/material';
 
 const createNewWeeklyMenu = (weekStartDate: string) => {
   const dailyMenus: IDailyMenu[] = [];
 
   for (let weekDay = 0; weekDay <= 6; weekDay++) {
-    dailyMenus.push({ weekDay, dishes: [''] });
+    dailyMenus.push({ weekDay, dishes: [] });
   }
 
   const weeklyMenu: IWeeklyMenu = {
@@ -26,12 +26,18 @@ const createNewWeeklyMenu = (weekStartDate: string) => {
   return weeklyMenu;
 };
 
-const mobileStyles = {
-  display: { mobile: 'block', tablet: 'none' },
-  height: 'fit-content',
+const weeklyMenuStyles = {
+  display: 'flex',
+  width: '100%',
+  flexDirection: 'column',
 };
 
-const desktopStyles = {
+const mobileStyles: SxProps = {
+  flex: 1,
+  display: { mobile: 'flex', tablet: 'none' },
+};
+
+const desktopStyles: SxProps = {
   display: { mobile: 'none', tablet: 'block' },
 };
 
@@ -99,34 +105,50 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
   };
 
   let content = (
-    <>
+    <Box className="weeklyMenu" sx={weeklyMenuStyles}>
       It looks like you have no menu for this week
       <button onClick={toggleCreateMode}>Create weekly menu</button>
-    </>
+    </Box>
   );
 
   if (weeklyMenu) {
     content = (
-      <Box component={'form'} onSubmit={submitHandler}>
+      <Box
+        className="weeklyMenu"
+        component={'form'}
+        sx={weeklyMenuStyles}
+        onSubmit={submitHandler}
+      >
+        <MobileMenu
+          className="mobileMenu"
+          weeklyMenu={weeklyMenu}
+          onChange={onChangeHandler}
+          sx={mobileStyles}
+        />
+        <DesktopMenu
+          className="desktopMenu"
+          weeklyMenu={weeklyMenu}
+          onChange={onChangeHandler}
+          sx={desktopStyles}
+        />
+
+        <button type="submit">
+          {isCreateMode ? 'Create menu' : 'Update Menu'}
+        </button>
         {isCreateMode && (
           <button type="button" onClick={toggleCreateMode}>
             Cancel
           </button>
         )}
-        <Box sx={mobileStyles}>
-          <MobileMenu weeklyMenu={weeklyMenu} onChange={onChangeHandler} />
-        </Box>
-        <Box sx={desktopStyles}>
-          <DesktopMenu weeklyMenu={weeklyMenu} onChange={onChangeHandler} />
-        </Box>
-        <button type="submit">
-          {isCreateMode ? 'Create menu' : 'Update Menu'}
-        </button>
       </Box>
     );
   }
 
-  return <Box sx={{ maxWidth: '100%' }}>{content}</Box>;
+  return (
+    <Box className="weeklyMenu" sx={weeklyMenuStyles}>
+      {content}
+    </Box>
+  );
 };
 
 export default WeeklyMenu;

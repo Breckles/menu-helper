@@ -5,34 +5,47 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+
+import { SxProps } from '@mui/material';
+
 import theme from '../../../styles/theme';
 
 import IWeeklyMenu from '../../../models/weekly-menu.model';
 import IDailyMenu from '../../../models/daily-menu.model';
 import DailyMenu from '../daily-menu';
 
-const mobileMenuStyles = {
+const mobileMenuStyles: SxProps = {
+  display: 'flex',
+  flexDirection: 'column',
   minHeight: '70px',
-  padding: '20px',
 };
 
-const tabPanelStyles = {
+const tabPanelStyles: SxProps = {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  gap: '10px',
+  gap: theme.spacing(),
   '.MuiTypography-root': {
-    fontSize: '2rem',
+    fontSize: theme.typography.h2,
   },
+  '&.active': {
+    flex: 1,
+  },
+};
+
+const dailyMenuStyles: SxProps = {
+  flex: 1,
 };
 
 type MobileMenuProps = {
   weeklyMenu: IWeeklyMenu;
   onChange: (updatedDailyMenu: IDailyMenu) => void;
+  className?: string;
+  sx?: SxProps;
 };
 
 const MobileMenu = (props: MobileMenuProps) => {
-  const { weeklyMenu } = props;
+  const { weeklyMenu, className = 'mobileMenu', sx = {} } = props;
   const [currentTab, setCurrentTab] = useState(0);
 
   const changeTabHandler = (e: SyntheticEvent, newTab: number) => {
@@ -53,19 +66,22 @@ const MobileMenu = (props: MobileMenuProps) => {
       key={dm.weekDay}
       id={`menu-tabpanel-${i}`}
       sx={tabPanelStyles}
+      className={i === currentTab ? 'active' : ''}
       aria-labelledby={`menu-tab-${i}`}
     >
       {i === currentTab && (
         <>
           <Typography>{dayjs().day(dm.weekDay).format('dddd')}</Typography>
-          <DailyMenu menu={dm} onChange={props.onChange} />
+          <DailyMenu sx={dailyMenuStyles} menu={dm} onChange={props.onChange} />
         </>
       )}
     </Box>
   ));
+  const styles = { ...mobileMenuStyles, ...sx };
+  console.log(styles);
 
   return (
-    <Box sx={mobileMenuStyles}>
+    <Box className={className} sx={styles}>
       <Tabs value={currentTab} onChange={changeTabHandler} variant="scrollable">
         {tabs}
       </Tabs>

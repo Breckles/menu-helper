@@ -1,4 +1,4 @@
-import { SxProps, Theme, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';

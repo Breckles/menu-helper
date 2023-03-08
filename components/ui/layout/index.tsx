@@ -22,6 +22,9 @@ const layoutStyles = {
 
 const mainStyles = {
   flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  maxWidth: '100vw',
 };
 
 const Layout = (props: LayoutProps) => {

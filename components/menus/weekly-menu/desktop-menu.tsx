@@ -8,14 +8,17 @@ import IWeeklyMenu from '../../../models/weekly-menu.model';
 import IDailyMenu from '../../../models/daily-menu.model';
 
 import DailyMenu from '../daily-menu';
+import { SxProps } from '@mui/material';
 
 type DesktopMenuProps = {
   weeklyMenu: IWeeklyMenu;
   onChange: (updatedDailyMenu: IDailyMenu) => void;
+  className?: string;
+  sx?: SxProps;
 };
 
 const DesktopMenu = (props: DesktopMenuProps) => {
-  const { weeklyMenu, onChange, ...rest } = props;
+  const { weeklyMenu, onChange, className = 'desktopMenu', sx = {} } = props;
 
   const listItems = weeklyMenu.dailyMenus.map((dm) => (
     <ListItem key={dm.weekDay}>
@@ -26,7 +29,11 @@ const DesktopMenu = (props: DesktopMenuProps) => {
     </ListItem>
   ));
 
-  return <List {...rest}>{listItems}</List>;
+  return (
+    <List className={className} sx={sx}>
+      {listItems}
+    </List>
+  );
 };
 
 export default DesktopMenu;

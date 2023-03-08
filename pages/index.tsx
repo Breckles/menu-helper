@@ -17,10 +17,15 @@ type HomePageProps = {
 };
 
 const homePageStyles = {
+  flex: 1,
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   gap: { mobile: theme.spacing(2) },
+  height: '100%',
+  '.weeklyMenu': {
+    flex: 1,
+  },
 };
 
 export default function Home(props: HomePageProps) {
@@ -51,7 +56,7 @@ export default function Home(props: HomePageProps) {
   };
 
   return (
-    <Box sx={homePageStyles}>
+    <Box id="homePage" sx={homePageStyles}>
       <WeekPicker onWeekChange={onWeekChange} />
       <Typography variant="h2">
         {displayWeekStart.format(displayFormat)} -{' '}
@@ -68,16 +73,6 @@ export default function Home(props: HomePageProps) {
 export const getServerSideProps: GetServerSideProps = async () => {
   const currentWeekStartString = dayjs().startOf('week').format('YYYY-MM-DD');
   const currentWeekMenu = await getWeeklyMenuByDate(currentWeekStartString);
-  // const staticReturn: { props: any; revalidate: false | number } = {
-  //   props: {
-  //     latestWeeklyMenu: currentWeeklyMenu,
-  //   },
-  //   revalidate: false,
-  // };
-
-  // if (currentWeekMenu) {
-  //   staticReturn.revalidate = 86400;
-  // }
 
   const serverProps = {
     props: {
