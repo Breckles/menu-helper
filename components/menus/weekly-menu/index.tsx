@@ -1,6 +1,7 @@
 import { useState, useEffect, FormEventHandler } from 'react';
 
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 import IWeeklyMenu, {
   IWeeklyMenuWithId,
@@ -26,10 +27,13 @@ const createNewWeeklyMenu = (weekStartDate: string) => {
   return weeklyMenu;
 };
 
-const weeklyMenuStyles = {
-  display: 'flex',
-  width: '100%',
-  flexDirection: 'column',
+const weeklyMenuStyles: SxProps = {
+  '&, form': {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    height: '100%',
+  },
 };
 
 const mobileStyles: SxProps = {
@@ -114,9 +118,9 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
   if (weeklyMenu) {
     content = (
       <Box
-        className="weeklyMenu"
+        // className="weeklyMenu"
         component={'form'}
-        sx={weeklyMenuStyles}
+        // sx={weeklyMenuStyles}
         onSubmit={submitHandler}
       >
         <MobileMenu
@@ -132,13 +136,13 @@ const WeeklyMenu = (props: WeeklyMenuProps) => {
           sx={desktopStyles}
         />
 
-        <button type="submit">
+        <Button variant="contained" type="submit">
           {isCreateMode ? 'Create menu' : 'Update Menu'}
-        </button>
+        </Button>
         {isCreateMode && (
-          <button type="button" onClick={toggleCreateMode}>
+          <Button variant="contained" type="button" onClick={toggleCreateMode}>
             Cancel
-          </button>
+          </Button>
         )}
       </Box>
     );

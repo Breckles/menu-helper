@@ -17,11 +17,16 @@ import DailyMenu from '../daily-menu';
 const mobileMenuStyles: SxProps = {
   display: 'flex',
   flexDirection: 'column',
-  minHeight: '70px',
+  gap: theme.spacing(),
+  padding: `${theme.spacing()} 0`,
+  width: '100%',
+  height: '100%',
 };
 
 const tabPanelStyles: SxProps = {
-  display: 'flex',
+  display: 'none',
+  width: '100%',
+  height: '100%',
   flexDirection: 'column',
   alignItems: 'center',
   gap: theme.spacing(),
@@ -29,12 +34,13 @@ const tabPanelStyles: SxProps = {
     fontSize: theme.typography.h2,
   },
   '&.active': {
-    flex: 1,
+    display: 'flex',
   },
 };
 
 const dailyMenuStyles: SxProps = {
-  flex: 1,
+  height: '100%',
+  // maxHeight: '100%',
 };
 
 type MobileMenuProps = {
@@ -78,7 +84,6 @@ const MobileMenu = (props: MobileMenuProps) => {
     </Box>
   ));
   const styles = { ...mobileMenuStyles, ...sx };
-  console.log(styles);
 
   return (
     <Box className={className} sx={styles}>

@@ -16,16 +16,22 @@ import { SxProps } from '@mui/material';
 
 const dailyMenuStyles: SxProps = {
   position: 'relative',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'end',
+  alignItems: 'center',
   width: '100%',
+  height: '100%',
+  maxHeight: '100%',
   '&>*': { width: '100%' },
   '.MuiList-root': {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: theme.spacing(6),
+    left: 0,
     display: 'flex',
     flexDirection: 'column',
     gap: theme.spacing(),
     width: '100%',
+    overflow: 'scroll',
   },
   '.MuiListItem-root': {
     gap: theme.spacing(3),
@@ -37,7 +43,9 @@ const dailyMenuStyles: SxProps = {
   },
   '#dishInputContainer': {
     position: 'absolute',
+    right: 0,
     bottom: 0,
+    left: 0,
     display: 'flex',
     gap: theme.spacing(2),
     '.MuiInputBase-input': {
@@ -60,12 +68,19 @@ type DailyMenuProps = {
 
 const DailyMenu = (props: DailyMenuProps) => {
   const [dishesList, setDishesList] = useState<IDishesListItem[]>([]);
+  const ulRef = useRef<HTMLUListElement>(null);
   const addDishInputRef = useRef<HTMLInputElement>();
   const { className = 'dailyMenu', sx = {} } = props;
 
   useEffect(() => {
     setDishesList(props.menu.dishes.map((dish, i) => ({ key: i, dish })));
   }, [props.menu]);
+
+  useEffect(() => {
+    if (ulRef.current) {
+      ulRef.current.scrollTo(0, ulRef.current.scrollHeight);
+    }
+  });
 
   const valueChangeHandler = (
     event: ChangeEvent<HTMLInputElement>,
@@ -125,8 +140,6 @@ const DailyMenu = (props: DailyMenuProps) => {
     });
   };
 
-  console.log(dishesList);
-
   const inputs = dishesList.map((item, i) => (
     <ListItem key={item.key}>
       <TextField
@@ -147,6 +160,13 @@ const DailyMenu = (props: DailyMenuProps) => {
     </ListItem>
   ));
 
+  const dishesUList = (
+    <List ref={ulRef}>
+      {inputs}
+      <ListItem id="anchor"></ListItem>
+    </List>
+  );
+
   const styles = { ...sx, ...dailyMenuStyles };
 
   return (
@@ -154,13 +174,13 @@ const DailyMenu = (props: DailyMenuProps) => {
       {inputs.length === 0 && (
         <Typography>There are currently no dishes for this day</Typography>
       )}
-      {inputs.length !== 0 && <List>{inputs}</List>}
+      {inputs.length !== 0 && dishesUList}
       <Box id="dishInputContainer">
         <TextField
           placeholder="Enter New Dish"
           inputRef={addDishInputRef}
         ></TextField>
-        <Button variant="outlined" type="button" onClick={addItemHandler}>
+        <Button variant="contained" type="button" onClick={addItemHandler}>
           Add Item
         </Button>
       </Box>

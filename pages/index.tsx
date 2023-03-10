@@ -21,7 +21,8 @@ const homePageStyles = {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  gap: { mobile: theme.spacing(2) },
+  gap: { mobile: theme.spacing(3) },
+  width: '100%',
   height: '100%',
   '.weeklyMenu': {
     flex: 1,

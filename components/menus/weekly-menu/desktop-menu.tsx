@@ -10,6 +10,11 @@ import IDailyMenu from '../../../models/daily-menu.model';
 import DailyMenu from '../daily-menu';
 import { SxProps } from '@mui/material';
 
+const desktopStyles: SxProps = {
+  width: '100%',
+  height: '100%',
+};
+
 type DesktopMenuProps = {
   weeklyMenu: IWeeklyMenu;
   onChange: (updatedDailyMenu: IDailyMenu) => void;

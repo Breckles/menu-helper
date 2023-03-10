@@ -1,16 +1,16 @@
+import { useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
+
+import theme from '../../../styles/theme';
+
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { SxProps } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { CalendarPicker } from '@mui/x-date-pickers/CalendarPicker';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { PickersDayProps } from '@mui/x-date-pickers';
-import dayjs, { Dayjs } from 'dayjs';
-import { useState } from 'react';
-import Box from '@mui/material/Box';
-import { TextField } from '@mui/material';
-
-type WeekPickerProps = {
-  weekStart?: Dayjs;
-  onWeekChange: (newWeekStart: Dayjs) => void;
-};
 
 const dayStyles = {
   '&.currentDay': {
@@ -20,6 +20,22 @@ const dayStyles = {
     backgroundColor: '#1976d290',
     color: 'white',
   },
+};
+
+const desktopStyles: SxProps = {
+  display: { mobile: 'none', tablet: 'unset' },
+};
+
+const mobileStyles: SxProps = {
+  display: { mobile: 'flex', tablet: 'none' },
+  flexDirection: 'column',
+  gap: theme.spacing(),
+  alignItems: 'center',
+};
+
+type WeekPickerProps = {
+  weekStart?: Dayjs;
+  onWeekChange: (newWeekStart: Dayjs) => void;
 };
 
 const WeekPicker = (props: WeekPickerProps) => {
@@ -74,14 +90,6 @@ const WeekPicker = (props: WeekPickerProps) => {
     }
   };
 
-  const desktopStyles = {
-    display: { mobile: 'none', tablet: 'unset' },
-  };
-
-  const mobileStyles = {
-    display: { mobile: 'unset', tablet: 'none' },
-  };
-
   return (
     <>
       <Box sx={desktopStyles}>
@@ -92,10 +100,15 @@ const WeekPicker = (props: WeekPickerProps) => {
         />
       </Box>
       <Box sx={mobileStyles}>
+        <Typography component={'label'} htmlFor="datePickerTextField">
+          Week starting date
+        </Typography>
         <MobileDatePicker
           renderDay={dayRenderer}
           onChange={dateChangeHandler}
-          renderInput={(props) => <TextField {...props} />}
+          renderInput={(props) => (
+            <TextField id="datePickerTextField" {...props} />
+          )}
           value={currentWeekStart}
         />
       </Box>
